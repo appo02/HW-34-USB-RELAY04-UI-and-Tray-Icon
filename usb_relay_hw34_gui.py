@@ -60,6 +60,12 @@ class RelayControlApp:
         self.always_on_top_button = tk.Button(root, text="Always on Top: OFF", command=self.toggle_always_on_top)
         self.always_on_top_button.grid(row=3, column=0, columnspan=4, padx=10, pady=10)
 
+        # Bind keyboard keys 1 to 4 to toggle relays
+        self.root.bind('1', lambda event: self.toggle_relay(0))
+        self.root.bind('2', lambda event: self.toggle_relay(1))
+        self.root.bind('3', lambda event: self.toggle_relay(2))
+        self.root.bind('4', lambda event: self.toggle_relay(3))
+
     def toggle_relay(self, relay):
         print(f"Relay {relay+1} toggled")
         current_state = (self.relay_state & (1 << relay)) == 0

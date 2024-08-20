@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter.scrolledtext import ScrolledText
 import sys
+import os
 import configparser
 
 def initialize_relay(ser):
@@ -17,7 +18,7 @@ def initialize_relay(ser):
     if response in [b'\xAD', b'\xAB', b'\xAC']:
         print(f"Relay initialized with response: {response.hex()}")
     else:
-        raise ValueError(f"Unexpected response from relay: {response.hex() if response else 'None'}")
+        print(f"Unexpected response from relay: {response.hex() if response else 'None'}")
 
 def control_relay(ser, byte_command):
     ser.write(byte_command)
@@ -43,14 +44,14 @@ class RelayControlApp:
         self.buttons = []
         for i in range(4):
             button = tk.Button(root, text=f"Relay {i+1} OFF", command=lambda i=i: self.toggle_relay(i))
-            button.grid(row=0, column=i, padx=10, pady=10)
+            button.grid(row=0, column=i, padx=5, pady=5)
             self.buttons.append(button)
             
             label = tk.Label(root, text=relay_labels[i])
-            label.grid(row=1, column=i, padx=10, pady=10)
+            label.grid(row=1, column=i, padx=5, pady=5)
 
         self.log_text = ScrolledText(root, wrap=tk.WORD, width=50, height=5)
-        self.log_text.grid(row=2, column=0, columnspan=4, padx=10, pady=10)
+        self.log_text.grid(row=2, column=0, columnspan=4, padx=5, pady=5)
         self.log_text.config(state=tk.DISABLED)
 
         # Redirect stdout to the text box
@@ -58,7 +59,7 @@ class RelayControlApp:
 
         # Add "Always on Top" button
         self.always_on_top_button = tk.Button(root, text="Always on Top: OFF", command=self.toggle_always_on_top)
-        self.always_on_top_button.grid(row=3, column=0, columnspan=4, padx=10, pady=10)
+        self.always_on_top_button.grid(row=3, column=0, columnspan=4, padx=5, pady=5)
 
         # Bind keyboard keys 1 to 4 to toggle relays
         self.root.bind('1', lambda event: self.toggle_relay(0))
@@ -97,23 +98,46 @@ class TextRedirector:
 
 def read_config(config_file):
     config = configparser.ConfigParser()
+    
+    # Debug print to check the file path
+    print(f"Reading config file from: {config_file}")
+    
+    # Check if the file exists
+    if not os.path.exists(config_file):
+        print(f"Config file does not exist: {config_file}")
+        return 'COM11', ['Relay 1 Control', 'Relay 2 Control', 'Relay 3 Control', 'Relay 4 Control']
+    
     config.read(config_file)
-    serial_port = config.get('SerialPort', 'port', fallback='COM10')
+    
+    # Debug print to check if the file is read correctly
+    print(f"Sections found in config: {config.sections()}")
+    
+    serial_port = config.get('SerialPort', 'port', fallback='COM11')
+    
+    # Debug print to check the retrieved port
+    print(f"Retrieved serial port: {serial_port}")
+    
     relay_labels = [
         config.get('Relays', 'Relay1Label', fallback='Relay 1 Control'),
         config.get('Relays', 'Relay2Label', fallback='Relay 2 Control'),
         config.get('Relays', 'Relay3Label', fallback='Relay 3 Control'),
         config.get('Relays', 'Relay4Label', fallback='Relay 4 Control')
     ]
+    
     return serial_port, relay_labels
 
 def main():
-    serial_port, relay_labels = read_config('relay_mapping.cfg')
+    # Provide the absolute path to the configuration file
+    config_file_path = os.path.join(os.path.dirname(__file__), 'relay_mapping.cfg')
+    serial_port, relay_labels = read_config(config_file_path)
+    
+    # Debug print to check the serial port before attempting to open it
+    print("Serial port:", serial_port)
     
     try:
         ser = serial.Serial(serial_port, 9600, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=5)
         print("Initializing relay...")
-        # initialize_relay(ser)        
+        initialize_relay(ser)        
     except Exception as e:
         messagebox.showerror("Initialization Error", str(e))
         return

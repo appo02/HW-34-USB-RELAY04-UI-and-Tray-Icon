@@ -1,0 +1,2 @@
+python check_requirements.py
+python usb_relay_hw34_gui.py

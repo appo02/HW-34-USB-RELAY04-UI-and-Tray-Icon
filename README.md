@@ -1,6 +1,8 @@
 # usb-relay004
 
 Control application for USB-RELAY04 (seeit.fr)
+![image](https://github-vni.geo.conti.de/storage/user/20685/files/034a47e2-028f-41c8-ad8e-5f8cd27c7d88)
+
 
 ## Installation
 

@@ -63,6 +63,7 @@ Source: "dist\USB-RELAY04\usb_relay_hw34_cli.exe";  DestDir: "{app}"; Flags: ign
 Source: "dist\USB-RELAY04\relay_mapping.cfg";       DestDir: "{app}"; Flags: ignoreversion onlyifdoesntexist uninsneveruninstall
 ; Docs
 Source: "dist\USB-RELAY04\README.txt";              DestDir: "{app}"; Flags: ignoreversion
+Source: "dist\USB-RELAY04\INSTALLER_README.txt";    DestDir: "{app}"; Flags: ignoreversion isreadme
 ; Driver
 Source: "dist\USB-RELAY04\Driver\*";                DestDir: "{app}\Driver"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: driver
 

@@ -28,10 +28,15 @@ def run(cmd):
     print(f"\n{'='*60}")
     print(f"  {cmd}")
     print(f"{'='*60}")
-    result = subprocess.run(cmd, shell=True, cwd=SCRIPT_DIR)
+    result = subprocess.run(cmd, shell=True, cwd=SCRIPT_DIR,
+                            env={**os.environ, "PYTHONPATH": ""})
     if result.returncode != 0:
         print(f"FAILED (exit {result.returncode}): {cmd}")
         sys.exit(1)
+
+
+# Use the same Python that is running this script
+PYTHON = sys.executable
 
 
 def main():
@@ -43,31 +48,30 @@ def main():
 
     # ── GUI app (windowed, no console) ──
     run(
-        'pyinstaller --noconfirm --onefile --windowed '
+        f'"{PYTHON}" -m PyInstaller --noconfirm --onefile --windowed '
         '--name "usb_relay_hw34_gui" '
         '--hidden-import customtkinter '
         '--collect-data customtkinter '
+        '--collect-all serial '
         '--hidden-import PIL '
-        '--hidden-import serial '
-        '--hidden-import serial.tools.list_ports '
         'usb_relay_hw34_gui.py'
     )
 
     # ── Tray app (windowed, no console) ──
     run(
-        'pyinstaller --noconfirm --onefile --windowed '
+        f'"{PYTHON}" -m PyInstaller --noconfirm --onefile --windowed '
         '--name "relay_tray" '
+        '--collect-all serial '
         '--hidden-import pystray '
         '--hidden-import PIL '
-        '--hidden-import serial '
         'relay_tray.py'
     )
 
     # ── CLI tool (console) ──
     run(
-        'pyinstaller --noconfirm --onefile --console '
+        f'"{PYTHON}" -m PyInstaller --noconfirm --onefile --console '
         '--name "usb_relay_hw34_cli" '
-        '--hidden-import serial '
+        '--collect-all serial '
         'usb_relay_hw34_cli.py'
     )
 
@@ -84,7 +88,7 @@ def main():
             print(f"  Moved {exe_name} -> dist/USB-RELAY04/")
 
     # Copy config and docs
-    for fname in ["relay_mapping.cfg", "README.txt"]:
+    for fname in ["relay_mapping.cfg", "README.txt", "INSTALLER_README.txt"]:
         src = os.path.join(SCRIPT_DIR, fname)
         if os.path.exists(src):
             shutil.copy2(src, os.path.join(DIST_DIR, fname))

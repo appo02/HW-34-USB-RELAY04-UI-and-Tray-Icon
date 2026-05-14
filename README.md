@@ -39,7 +39,15 @@ All three tools share a single config file (`relay_mapping.cfg`) for COM port an
 
 ---
 
-## Installation
+## Quick Install (no Python needed)
+
+Download **[USB-RELAY04_Setup_1.0.0.exe](Release/USB-RELAY04_Setup_1.0.0.exe)** from the `Release/` folder and run it. The installer bundles everything — GUI, System Tray, CLI, driver, and config — into standalone `.exe` files. No Python or dependencies required.
+
+See [INSTALLER_README.txt](INSTALLER_README.txt) for full installer instructions.
+
+---
+
+## Installation (from source)
 
 ### 1. Install the PL2303 Driver
 
@@ -130,7 +138,10 @@ relay_tray.py              System tray quick-control
 relay_mapping.cfg          Shared configuration
 requirements.txt           Python dependencies
 check_requirements.py      Dependency auto-installer
+build_installer.py         Build standalone .exe files (PyInstaller)
+installer.iss              Inno Setup installer script
 Driver/                    PL2303 USB-to-Serial driver
+Release/                   Ready-to-use installer (.exe) + readme
 ```
 
 ---
